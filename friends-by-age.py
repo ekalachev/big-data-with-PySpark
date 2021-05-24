@@ -28,6 +28,7 @@ averagesByAge = rdd.mapValues(
     lambda x: np.round(x[0] / x[1], 2)
 )
 
+# action operation
 results = averagesByAge.collect()
 
 for result in results:
