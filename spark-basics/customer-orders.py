@@ -9,7 +9,7 @@ def parseLine(line):
 conf = SparkConf().setMaster("local").setAppName("WordCount")
 sc = SparkContext(conf=conf)
 
-orders = sc.textFile("./data/customer-orders.csv")
+orders = sc.textFile("../data/customer-orders.csv")
 
 sorted_orders = (orders
                  .map(parseLine)

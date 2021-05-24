@@ -13,7 +13,7 @@ def parseLine(line: str):
     return (age, num_fiends)
 
 
-lines = sc.textFile("./data/fakefriends.csv")
+lines = sc.textFile("../data/fakefriends.csv")
 rdd = lines.map(parseLine)
 
 # transformation operations

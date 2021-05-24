@@ -14,7 +14,7 @@ def parseLine(line):
     return (statiob_id, entry_type, temperature)
 
 
-lines = sc.textFile("./data/1800.csv")
+lines = sc.textFile("../data/1800.csv")
 
 parsedLines = lines.map(parseLine)
 
