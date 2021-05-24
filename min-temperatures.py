@@ -15,10 +15,20 @@ def parseLine(line):
 
 
 lines = sc.textFile("./data/1800.csv")
+
 parsedLines = lines.map(parseLine)
-min_temps = parsedLines.filter(lambda x: "TMIN" in x[1])
-station_temps = min_temps.map(lambda x: (x[0], x[2]))
-min_temps = station_temps.reduceByKey(lambda x, y: min(x, y))
+
+# transformation operations
+min_temps = parsedLines.filter(
+    lambda x: "TMIN" in x[1]
+).map(
+    lambda x: (x[0], x[2])
+).reduceByKey(
+    # find the min value by key
+    lambda x, y: min(x, y)
+)
+
+# action operations
 results = min_temps.collect()
 
 for result in results:
