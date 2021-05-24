@@ -17,7 +17,8 @@ friendsByAge.avg("friends").sort("age").show()
 friendsByAge.agg(func.round(func.avg("friends"), 2)).sort("age").show()
 
 # With a custom column name
-friendsByAge.agg(func.round(func.avg("friends"), 2)
-                 .alias("friends_avg")).sort("age").show()
+friendsByAge.agg(
+    func.round(func.avg("friends"), 2).alias("friends_avg")
+).sort("age").show()
 
 spark.stop()
