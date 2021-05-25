@@ -8,6 +8,8 @@ friends = (spark.read
            .option("inferSchema", "true")
            .csv("../data/fakefriends-header.csv"))
 
+friends.printSchema()
+
 friendsByAge = friends.select("age", "friends").groupBy("age")
 
 # Sorted
