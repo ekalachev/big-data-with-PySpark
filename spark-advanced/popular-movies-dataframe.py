@@ -15,6 +15,7 @@ schema = StructType([
 movies_df = spark.read.option("sep", "\t").schema(
     schema).csv("../data/ml-100k/u.data")
 
+# Sort all movies by popularity
 top_movies_df = movies_df.groupBy(
     "movie_id").count().orderBy(func.desc("count"))
 
