@@ -1,3 +1,7 @@
 
 data/*
 4_spark-on-cluster/hotel.py
+5_apache-airflow/airflow.cfg
+5_apache-airflow/airflow.db
+5_apache-airflow/logs/scheduler/latest
+5_apache-airflow/webserver_config.py

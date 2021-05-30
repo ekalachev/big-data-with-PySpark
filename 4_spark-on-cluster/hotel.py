@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 
 def setup_spark():
     spark = SparkSession.builder.appName(
-        "HotelWeather").master("local").getOrCreate()
+        "HotelWeather").master("local[*]").getOrCreate()
 
     spark.conf.set(
         "fs.azure.account.auth.type.bd201stacc.dfs.core.windows.net", "OAuth")
@@ -26,32 +26,62 @@ def setup_spark():
 
 spark = setup_spark()
 
-hotel_schema = StructType([
-    StructField("id", LongType(), False),
+hotel_weather_schema = StructType([
+    StructField("id", StringType(), False),
     StructField("address", StringType(), False),
     StructField("country", StringType(), False),
     StructField("city", StringType(), False),
     StructField("name", StringType(), False),
-    StructField("latitude", DoubleType(), True),
-    StructField("longitude", DoubleType(), True),
-    StructField("geo_hash", StringType(), True)
-])
-
-weather_schema = StructType([
-    StructField("lng", DoubleType(), False),
-    StructField("lat", DoubleType(), False),
-    StructField("geo_hash", StringType(), True),
-    StructField("avg_tmpr_f", DoubleType(), False),
+    StructField("latitude", DoubleType(), False),
+    StructField("longitude", DoubleType(), False),
+    StructField("geoHash", StringType(), False),
     StructField("avg_tmpr_c", DoubleType(), False),
+    StructField("avg_tmpr_f", DoubleType(), False),
     StructField("wthr_date", StringType(), False),
     StructField("year", IntegerType(), False),
     StructField("month", IntegerType(), False),
     StructField("day", IntegerType(), False)
 ])
 
-hotel_df = spark.read.option("header", "true") \
-    .parquet("abfss://m05sparkbasics@bd201stacc.dfs.core.windows.net/hotels")
+expedia_schema = StructType([
+    StructField("id", LongType(), True),
+    StructField("date_time", StringType(), True),
+    StructField("site_name", IntegerType(), True),
+    StructField("posa_continent", IntegerType(), True),
+    StructField("user_location_country", IntegerType(), True),
+    StructField("user_location_region", IntegerType(), True),
+    StructField("user_location_city", IntegerType(), True),
+    StructField("orig_destination_distance", DoubleType(), True),
+    StructField("user_id", IntegerType(), True),
+    StructField("is_mobile", IntegerType(), True),
+    StructField("is_package", IntegerType(), True),
+    StructField("channel", IntegerType(), True),
+    StructField("srch_ci", StringType(), True),
+    StructField("srch_co", StringType(), True),
+    StructField("srch_adults_cnt", IntegerType(), True),
+    StructField("srch_children_cnt", IntegerType(), True),
+    StructField("srch_rm_cnt", IntegerType(), True),
+    StructField("srch_destination_id", IntegerType(), True),
+    StructField("srch_destination_type_id", IntegerType(), True),
+    StructField("hotel_id", LongType(), True)
+])
 
-hotel_df.show()
+hotel_weather_df = spark.read \
+    .format("parquet") \
+    .option("header", "true") \
+    .schema(hotel_weather_schema) \
+    .load("abfss://m06sparksql@bd201stacc.dfs.core.windows.net/hotel-weather")
 
-# spark-submit --packages org.apache.hadoop:hadoop-common:3.3.0,org.apache.hadoop:hadoop-azure:3.3.0,com.microsoft.azure:azure-storage:8.6.6 .\hotel.py
+hotel_weather_df.show()
+
+expedia_df = spark.read \
+    .format("avro") \
+    .option("header", "true") \
+    .schema(expedia_schema) \
+    .load("abfss://m06sparksql@bd201stacc.dfs.core.windows.net/expedia")
+
+expedia_df.show()
+
+spark.stop()
+
+# spark-submit --packages org.apache.hadoop:hadoop-client:3.2.1,org.apache.hadoop:hadoop-azure:3.2.1,org.apache.hadoop:hadoop-azure-datalake:3.2.1,com.azure:azure-identity:1.2.3,com.azure:azure-storage-file-datalake:12.4.1,com.azure:azure-storage-blob:12.10.2,com.microsoft.azure:azure-data-lake-store-sdk:2.3.9,com.microsoft.azure:azure-keyvault-core:1.2.4,com.microsoft.azure:azure-storage:8.6.6,com.thoughtworks.paranamer:paranamer:2.3,org.apache.spark:spark-avro_2.12:3.1.2 hotel.py
